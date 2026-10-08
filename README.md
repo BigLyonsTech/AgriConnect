@@ -1,102 +1,104 @@
-# AgriConnect
-AgriConnect Farm is a multi-tenant SaaS platform for farm management and produce marketplace operations. It helps farmers, agribusinesses, and cooperatives manage crops, inventory, expenses, yields, and connect directly with buyers.
-# AgriConnect Farm — Project Blueprint (MMS 4)
+# AgriConnect Farm
 
-## 1. Backend Structure (Spring Boot, package-by-feature)
-
-Package-by-feature beats package-by-layer for a project this size — easier to explain to examiners ("here's the marketplace module") and easier for you to navigate solo.
+Multi-tenant farm management and produce marketplace SaaS — MMS 4 final year project.
 
 ```
-com.agriconnect
-├── config/               # SecurityConfig, TenantConfig, SwaggerConfig, WebConfig
-├── common/
-│   ├── exception/        # GlobalExceptionHandler, custom exceptions
-│   ├── util/
-│   └── base/             # BaseEntity (id, createdAt, updatedAt, tenantId)
-├── tenant/
-│   ├── TenantContext.java        # ThreadLocal holding current tenant_id
-│   ├── TenantInterceptor.java    # resolves tenant from JWT/subdomain
-│   └── TenantFilter.java         # Hibernate filter enabling tenant scoping
-├── auth/
-│   ├── entity/ (User, Role)
-│   ├── controller/ (AuthController)
-│   ├── service/ (AuthService, JwtService)
-│   └── dto/
-├── farm/
-│   ├── entity/ (Farm, Crop, Livestock)
-│   ├── controller/
-│   ├── service/
-│   ├── repository/
-│   └── dto/
-├── inventory/
-│   ├── entity/ (InventoryItem, YieldRecord)
-│   ├── service/ (YieldAnalyticsService)
-│   └── ...
-├── marketplace/
-│   ├── entity/ (Listing, Order, OrderItem)
-│   ├── service/ (MatchingService)
-│   └── ...
-├── payment/
-│   ├── entity/ (EscrowTransaction)
-│   ├── service/ (EscrowService, PaystackClient / StripeClient)
-│   └── webhook/ (PaymentWebhookController)
-├── weather/
-│   ├── service/ (WeatherClient — external API wrapper)
-│   └── dto/
-├── analytics/
-│   └── service/ (DashboardService — aggregates across modules)
-└── AgriConnectApplication.java
+agriconnect-farm-project/
+├── backend/            Spring Boot API — see backend/README.md
+├── frontend/           React + Vite SPA — see frontend/README.md
+└── docker-compose.yml  Runs Postgres + backend + frontend together
 ```
 
-Each feature folder internally follows: `entity/ controller/ service/ repository/ dto/ mapper/`. Keeps every module self-contained — you can literally zip one folder and explain it as a unit during defense.
+## Feature completeness
 
-## 2. Multi-Tenancy Approach
+Every module from the original project brief is implemented end-to-end
+(backend API + frontend UI), not just auth:
 
-**Recommendation: shared schema + `tenant_id` column + Hibernate `@Filter`**, not schema-per-tenant.
-
-Why: schema-per-tenant is a nightmare to manage, migrate, and demo within a final-year timeline. Shared schema with a `tenant_id` on every table + a Hibernate filter auto-applied per request gives you real multi-tenancy (a genuine MMS 4 requirement) without the operational overhead. `BaseEntity` carries `tenant_id`; `TenantInterceptor` reads it from the JWT and sets `TenantContext`; a `@FilterDef`/`@Filter` on each entity enforces it at the query level so you can't accidentally leak data across tenants — which is exactly the kind of detail examiners probe.
-
-## 3. Frontend Structure (React)
-
-```
-src/
-├── api/                  # axios instances, one file per domain (farmApi.js, orderApi.js)
-├── components/           # shared/dumb UI (Button, Table, Modal)
-├── features/
-│   ├── auth/
-│   ├── farms/
-│   ├── inventory/
-│   ├── marketplace/
-│   └── orders/
-├── hooks/
-├── pages/                # route-level composition of features
-├── store/                # Zustand or Redux Toolkit slices, per feature
-└── App.jsx
-```
-
-Feature-folder structure again — mirrors the backend, so the whole codebase reads consistently.
-
-## 4. Implementation Plan (Sprints)
-
-| Sprint | Focus | Deliverable |
+| Module | Backend | Frontend |
 |---|---|---|
-| 1 (wk 1-2) | Auth + multi-tenancy + Farm/Crop/Livestock CRUD | Can register a co-op, log in, add farms |
-| 2 (wk 3) | Inventory + yield tracking + analytics | Yield reports, JUnit coverage on business logic |
-| 3 (wk 4-5) | Marketplace listings + buyer-seller matching | Listings visible, orders created |
-| 4 (wk 6) | Escrow payment integration (Paystack/Stripe) | Payment held on order, released on delivery |
-| 5 (wk 7) | Weather API integration + dashboard | Weather widget per farm, analytics dashboard |
-| 6 (wk 8) | Docker, CI/CD (GitHub Actions), deployment, docs | Live deployed demo + project report |
+| Multi-tenant auth (register/login/JWT) | ✅ | ✅ Landing → Register/Login → Dashboard |
+| Farm management | ✅ | ✅ Farms page |
+| Crop & livestock tracking | ✅ | ✅ Crops & Livestock page |
+| Weather insights per farm | ✅ (OpenWeatherMap) | ✅ Inline on Farms page |
+| Inventory & yield tracking | ✅ | ✅ Inventory page |
+| Expense & revenue tracking | ✅ | ✅ Finance page with live profit calc |
+| Marketplace (cross-tenant listings) | ✅ | ✅ Marketplace page (browse + sell) |
+| Orders | ✅ | ✅ Orders page |
+| Escrow payments (Paystack) | ✅ (real API client + webhook) | ✅ Pay/fulfill/release flow |
+| Analytics dashboard | ✅ | ✅ Real numbers on Dashboard |
 
-Each sprint ends with something demoable — never leave testing/deployment to the last week.
+## Architecture highlight: two-tier multi-tenancy
 
-## 5. How We Work Together, Fast
+Most data (Farm, Crop, Livestock, Inventory, Finance) is strictly isolated
+per tenant via a Hibernate row-level filter — invisible to application code.
+Marketplace data (Listing, Order) is a deliberate exception: it's designed to
+be visible **across** tenants, with ownership checked explicitly instead of
+filtered automatically. Both patterns are documented in code comments in
+`backend/src/main/java/com/agriconnect/marketplace/` — worth highlighting in
+your project defense as evidence of deliberate design, not an oversight.
 
-- **You bring the task, I scaffold it.** Tell me "give me Farm entity + repo + service + controller + tests" and I generate the boilerplate; you review, tweak, and own the logic — faster than typing it from scratch, and you still understand every line.
-- **Tests alongside code, not after.** Ask me for the JUnit test class in the same message as the service — keeps coverage honest and gives you a working `mvn test` suite continuously, which examiners specifically check.
-- **Git discipline even solo:** feature branches per sprint item (`feature/farm-crud`), small atomic commits, PR-style self-review before merging to `main`. Gives you a clean commit history to show as evidence of process.
-- **Documentation as you go.** After each sprint, ask me to draft that chapter of your project report (architecture decisions, challenges, screenshots' captions) — spreads the writing load instead of a crunch at the end.
-- **Definition of done per feature:** entity + tests pass + endpoint documented (Swagger) + committed. Nothing marked done without all four.
+## Running everything at once
 
-## 6. Suggested Immediate Next Step
+```bash
+docker-compose up --build
+```
 
-Start Sprint 1: I can generate the `BaseEntity`, `TenantContext`/`TenantInterceptor`, and the `auth` module (User/Role + JWT) in one pass so multi-tenancy is baked in from the first line of code rather than retrofitted later.
+| Service | Port |
+|---|---|
+| `postgres` | 5432 |
+| `backend` | 8080 |
+| `frontend` | 5173 |
+
+Open `http://localhost:5173`.
+
+## External services
+
+Two features need real API keys to actually function (see `backend/README.md`
+for where to set them): **Paystack** (payments) and **OpenWeatherMap**
+(weather). Everything else works with zero external dependencies beyond
+Postgres.
+
+## Running each half separately
+
+```bash
+# backend
+cd backend && mvn spring-boot:run
+cd backend && mvn clean test
+
+# frontend
+cd frontend && npm install && cp .env.example .env && npm run dev
+```
+
+## Known limitation from this build environment
+
+The project was originally written in a sandbox without Maven, Node, or
+internet access. It has since been built and verified on a real machine
+(Java 26, Maven 3.9, Node 26, PostgreSQL 16):
+
+- `mvn clean test` — **25 tests pass**
+- `npm install && npm run build` — **passes**
+- Full API smoke test (register → farm → crop → inventory → finance →
+  marketplace listing → order → analytics) — **passes**
+
+Two fixes were applied to make this work on **Java 26** (see `backend/pom.xml`):
+Mockito was upgraded to 5.24.0 and ByteBuddy to 1.17.7 (the versions bundled
+with Spring Boot 3.3.4 cannot instrument Java 26 class files). A
+`TenantFilterInterceptor` ordering fix was also applied so the Hibernate
+tenant filter runs after Spring's OpenEntityManagerInView interceptor.
+
+## Registering as a BUYER
+
+Registration now asks whether you're joining as a **Farmer / Cooperative**
+(OWNER) or a **Buyer / Market trader** (BUYER). OWNER remains the default.
+ADMIN and FARMER roles cannot be self-assigned at sign-up.
+
+## Suggested demo script
+
+Register an org as OWNER → add a farm → add a crop → check its weather →
+record inventory and an expense → create a marketplace listing → register a
+second org as BUYER (separate browser/incognito) → browse and order the
+listing → pay → back in the OWNER account, mark fulfilled and release funds →
+check the Dashboard numbers update throughout. This single flow demonstrates
+multi-tenancy, RBAC, CRUD, cross-tenant marketplace logic, external API
+integration, and payments in one pass — the exact "golden workflow" from the
+original project pitch.

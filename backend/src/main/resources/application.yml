@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: agriconnect-farm
+  datasource:
+    url: jdbc:postgresql://localhost:5432/agriconnect
+    username: ${DB_USERNAME:agriconnect}
+    password: ${DB_PASSWORD:agriconnect}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-this-super-secret-key-min-32-chars-long}
+    expiration-ms: 86400000
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+  paystack:
+    secret-key: ${PAYSTACK_SECRET_KEY:}
+  weather:
+    api-key: ${WEATHER_API_KEY:}
+
+logging:
+  level:
+    com.agriconnect: DEBUG
