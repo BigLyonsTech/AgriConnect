@@ -1,0 +1,25 @@
+/* Only the placeholder module cards remain here - the page shell (header,
+   nav, user info, logout) now comes from AppLayout / applayout.css, shared
+   across every authenticated page instead of being duplicated per page. */
+.dashboard-placeholder-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+.placeholder-card{
+  background: #fff;
+  border: 1px solid #dfe9e4;
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  transition: .15s;
+  color: inherit;
+}
+.placeholder-card:hover{
+  border-color: #08783f;
+  box-shadow: 0 10px 30px rgba(20,55,35,.08);
+  transform: translateY(-2px);
+}
+.placeholder-card h3{ margin-bottom: 6px; }
+.placeholder-card p{ color: #94a49d; font-size: 13px; }
