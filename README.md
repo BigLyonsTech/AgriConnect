@@ -40,23 +40,27 @@ your project defense as evidence of deliberate design, not an oversight.
 ## Running everything at once
 
 ```bash
+cp .env.example .env   # optional: add API keys / change the Postgres port
 docker-compose up --build
 ```
 
 | Service | Port |
 |---|---|
-| `postgres` | 5432 |
+| `postgres` | 5432 (or `POSTGRES_HOST_PORT`) |
 | `backend` | 8080 |
 | `frontend` | 5173 |
 
-Open `http://localhost:5173`.
+All three containers have healthchecks (the backend uses `/actuator/health`),
+and each one starts only after the service it depends on is healthy. Open
+`http://localhost:5173`.
 
 ## External services
 
-Two features need real API keys to actually function (see `backend/README.md`
-for where to set them): **Paystack** (payments) and **OpenWeatherMap**
-(weather). Everything else works with zero external dependencies beyond
-Postgres.
+Two features need real API keys to actually function: **Paystack** (payments)
+and **OpenWeatherMap** (weather). Set `PAYSTACK_SECRET_KEY` and
+`WEATHER_API_KEY` in your shell or in the root `.env`; docker-compose passes
+them to the backend. Without them, those endpoints return 502 and everything
+else still works.
 
 ## Running each half separately
 
