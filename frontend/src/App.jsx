@@ -18,7 +18,8 @@ function Protected({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    // Opt in to React Router v7 behaviour now; silences the v6 deprecation warnings.
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
