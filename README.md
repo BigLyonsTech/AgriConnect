@@ -1,5 +1,7 @@
 # AgriConnect Farm
 
+[![CI](https://github.com/BigLyonsTech/AgriConnect/actions/workflows/ci.yml/badge.svg)](https://github.com/BigLyonsTech/AgriConnect/actions/workflows/ci.yml)
+
 Multi-tenant farm management and produce marketplace SaaS — MMS 4 final year project.
 
 ```
