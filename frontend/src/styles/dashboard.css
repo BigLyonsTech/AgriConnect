@@ -8,8 +8,8 @@
   margin-top: 8px;
 }
 .placeholder-card{
-  background: #fff;
-  border: 1px solid #dfe9e4;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 14px;
   padding: 24px;
   text-align: center;
@@ -17,9 +17,9 @@
   color: inherit;
 }
 .placeholder-card:hover{
-  border-color: #08783f;
-  box-shadow: 0 10px 30px rgba(20,55,35,.08);
+  border-color: var(--green-text);
+  box-shadow: 0 10px 30px var(--shadow);
   transform: translateY(-2px);
 }
 .placeholder-card h3{ margin-bottom: 6px; }
-.placeholder-card p{ color: #94a49d; font-size: 13px; }
+.placeholder-card p{ color: var(--subtle); font-size: 13px; }

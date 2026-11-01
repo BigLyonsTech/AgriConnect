@@ -61,7 +61,7 @@ export default function OrdersPage() {
     <AppLayout>
       <div className="page-header"><h1>Orders</h1></div>
       {error && <div className="page-error">{error}</div>}
-      {notice && <div className="page-error" style={{ background: '#eaf7ef', color: '#08783f' }}>{notice}</div>}
+      {notice && <div className="page-notice">{notice}</div>}
 
       {user?.role === 'BUYER' && (
         <>
@@ -111,7 +111,7 @@ export default function OrdersPage() {
                         <button className="btn-primary-sm" onClick={() => handleFulfill(order)}>Mark Fulfilled</button>
                       )}
                       {order.status === 'PAID' && (
-                        <button className="btn-danger-sm" style={{ color: '#08783f', borderColor: '#c8e6d3' }} onClick={() => handleRelease(order)}>
+                        <button className="btn-success-sm" onClick={() => handleRelease(order)}>
                           Release Funds
                         </button>
                       )}

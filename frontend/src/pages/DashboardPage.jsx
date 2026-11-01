@@ -20,7 +20,7 @@ export default function DashboardPage() {
       <div className="page-header">
         <h1>Welcome, {user?.fullName?.split(' ')[0]} 👋</h1>
       </div>
-      <p style={{ color: '#61736c', marginBottom: 24 }}>
+      <p className="text-muted" style={{ marginBottom: 24 }}>
         You're logged in to <strong>{user?.organizationName}</strong> as <strong>{user?.role}</strong>.
       </p>
 

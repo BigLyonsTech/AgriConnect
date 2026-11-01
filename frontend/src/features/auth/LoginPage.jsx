@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { extractErrorMessage } from '../../utils/errors';
+import ThemeToggle from '../../components/ThemeToggle';
 import '../../styles/auth.css';
 
 export default function LoginPage() {
@@ -34,6 +35,7 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
+      <ThemeToggle className="theme-toggle-floating" />
       <div className="auth-card">
         <Link to="/" className="auth-logo">
           🌱 Agri<span>Connect</span>
