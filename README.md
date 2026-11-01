@@ -81,7 +81,9 @@ The project was originally written in a sandbox without Maven, Node, or
 internet access. It has since been built and verified on a real machine
 (Java 26, Maven 3.9, Node 26, PostgreSQL 16):
 
-- `mvn clean test` — **25 tests pass**
+- `mvn clean test` — **32 tests pass**, including `TenantIsolationIT`, which
+  proves a second org can't list, read, edit, delete or attach records to
+  another org's farms, crops, livestock, inventory, finance or yield data
 - `npm install && npm run build` — **passes**
 - Full API smoke test (register → farm → crop → inventory → finance →
   marketplace listing → order → analytics) — **passes**
