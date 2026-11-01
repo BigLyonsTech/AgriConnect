@@ -1,0 +1,70 @@
+/* Colour tokens for light and dark mode. Every stylesheet reads colours from
+   here; the active theme is set as data-theme on <html> (see index.html and
+   components/ThemeToggle.jsx). Light values are the original palette. */
+:root{
+  color-scheme: light;
+  --bg:#f8fbf9;
+  --tint:#edf8f1;          /* soft green page wash (hero, auth, why) */
+  --surface:#ffffff;       /* cards, header, tables, inputs */
+  --surface-2:#f4f9f6;     /* table heads, stat tiles */
+  --surface-glass:rgba(255,255,255,.92);
+  --text:#17312a;
+  --text-2:#344740;        /* form labels, nav links */
+  --muted:#61736c;
+  --subtle:#94a49d;
+  --line:#dfe9e4;
+  --line-soft:#eef4f1;
+  --green:#08783f;         /* filled buttons / active states (white text on top) */
+  --green-dark:#075d33;
+  --green-light:#eaf7ef;   /* green tint backgrounds */
+  --green-line:#c8e6d3;
+  --green-text:#08783f;    /* green used as text on a surface */
+  --danger:#b3261e;
+  --danger-bg:#fdecec;
+  --danger-line:#f3c9c5;
+  --warn-bg:#fff4e0;
+  --warn-text:#a3690a;
+  --neutral-bg:#f4f4f4;
+  --neutral-text:#6b6b6b;
+  --shadow:rgba(20,55,35,.06);
+  --footer-bg:#123328;
+}
+
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0e1714;
+  --tint:#11211b;
+  --surface:#16231e;
+  --surface-2:#1c2c26;
+  --surface-glass:rgba(22,35,30,.92);
+  --text:#e3eee8;
+  --text-2:#c2d3ca;
+  --muted:#9db1a7;
+  --subtle:#7f948a;
+  --line:#2a3b34;
+  --line-soft:#21312b;
+  --green:#0e8a4a;
+  --green-dark:#0b7340;
+  --green-light:#1a3428;
+  --green-line:#2c5240;
+  --green-text:#5fd394;
+  --danger:#f28b82;
+  --danger-bg:#3a1f1d;
+  --danger-line:#5e2d29;
+  --warn-bg:#3a2d14;
+  --warn-text:#f0c060;
+  --neutral-bg:#272d2a;
+  --neutral-text:#b1b8b4;
+  --shadow:rgba(0,0,0,.35);
+  --footer-bg:#0a120f;
+}
+
+body{ margin:0; background:var(--bg); color:var(--text); }
+
+.theme-toggle{
+  display:inline-grid; place-items:center; width:36px; height:36px; flex:none;
+  border:1px solid var(--line); border-radius:8px; background:var(--surface);
+  color:var(--text); font-size:16px; line-height:1; cursor:pointer; transition:.15s;
+}
+.theme-toggle:hover{ border-color:var(--green-text); }
+.theme-toggle-floating{ position:fixed; top:16px; right:16px; z-index:60; }

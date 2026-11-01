@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ThemeToggle from '../components/ThemeToggle';
 import '../styles/landing.css';
 
 export default function LandingPage() {
@@ -25,6 +26,7 @@ export default function LandingPage() {
           </nav>
 
           <div className="nav-actions">
+            <ThemeToggle />
             <Link to="/login" className="btn btn-outline">Log In</Link>
             <Link to="/register" className="btn btn-primary">Get Started</Link>
           </div>

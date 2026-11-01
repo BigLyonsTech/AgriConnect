@@ -104,14 +104,14 @@ export default function FarmsPage() {
                 <td>
                   {weatherByFarm[farm.id] ? (
                     weatherByFarm[farm.id].error ? (
-                      <span style={{ color: '#b3261e', fontSize: 12 }}>{weatherByFarm[farm.id].error}</span>
+                      <span style={{ color: 'var(--danger)', fontSize: 12 }}>{weatherByFarm[farm.id].error}</span>
                     ) : (
                       <span>
                         🌤️ {weatherByFarm[farm.id].temperatureCelsius}°C, {weatherByFarm[farm.id].description}
                       </span>
                     )
                   ) : (
-                    <button className="btn-danger-sm" style={{ color: '#08783f', borderColor: '#c8e6d3' }} onClick={() => handleCheckWeather(farm)}>
+                    <button className="btn-success-sm" onClick={() => handleCheckWeather(farm)}>
                       Check weather
                     </button>
                   )}

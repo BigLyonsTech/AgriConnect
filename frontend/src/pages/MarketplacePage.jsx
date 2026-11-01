@@ -79,14 +79,14 @@ export default function MarketplacePage() {
     <AppLayout>
       <div className="page-header"><h1>Marketplace</h1></div>
       {error && <div className="page-error">{error}</div>}
-      {notice && <div className="page-error" style={{ background: '#eaf7ef', color: '#08783f' }}>{notice}</div>}
+      {notice && <div className="page-notice">{notice}</div>}
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        <button className="btn-primary-sm" style={tab !== 'browse' ? { background: '#fff', color: '#08783f', border: '1px solid #c8e6d3' } : {}} onClick={() => setTab('browse')}>
+        <button className={'btn-primary-sm' + (tab !== 'browse' ? ' btn-outline-sm' : '')} onClick={() => setTab('browse')}>
           Browse
         </button>
         {CAN_SELL.includes(user?.role) && (
-          <button className="btn-primary-sm" style={tab !== 'mine' ? { background: '#fff', color: '#08783f', border: '1px solid #c8e6d3' } : {}} onClick={() => setTab('mine')}>
+          <button className={'btn-primary-sm' + (tab !== 'mine' ? ' btn-outline-sm' : '')} onClick={() => setTab('mine')}>
             My Listings
           </button>
         )}
@@ -103,7 +103,7 @@ export default function MarketplacePage() {
                 <tr key={listing.id}>
                   <td>
                     <strong>{listing.produceName}</strong>
-                    {listing.description && <div style={{ fontSize: 12, color: '#94a49d' }}>{listing.description}</div>}
+                    {listing.description && <div style={{ fontSize: 12, color: 'var(--subtle)' }}>{listing.description}</div>}
                   </td>
                   <td>₦{Number(listing.pricePerUnit).toLocaleString()} / {listing.unit}</td>
                   <td>{listing.quantityAvailable} {listing.unit}</td>
@@ -114,14 +114,14 @@ export default function MarketplacePage() {
                           type="number"
                           min="1"
                           placeholder="Qty"
-                          style={{ width: 70, padding: '6px 8px', border: '1px solid #dfe9e4', borderRadius: 6 }}
+                          style={{ width: 70, padding: '6px 8px', border: '1px solid var(--line)', borderRadius: 6, background: 'var(--surface)', color: 'var(--text)' }}
                           value={orderQuantities[listing.id] || ''}
                           onChange={(e) => setOrderQuantities((p) => ({ ...p, [listing.id]: e.target.value }))}
                         />
                         <button className="btn-primary-sm" onClick={() => handlePlaceOrder(listing)}>Order</button>
                       </div>
                     ) : (
-                      <span style={{ fontSize: 12, color: '#94a49d' }}>Only BUYER accounts can order</span>
+                      <span style={{ fontSize: 12, color: 'var(--subtle)' }}>Only BUYER accounts can order</span>
                     )}
                   </td>
                 </tr>
