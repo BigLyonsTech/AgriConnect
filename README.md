@@ -100,6 +100,17 @@ Registration now asks whether you're joining as a **Farmer / Cooperative**
 (OWNER) or a **Buyer / Market trader** (BUYER). OWNER remains the default.
 ADMIN and FARMER roles cannot be self-assigned at sign-up.
 
+## Live demo, video and guided tour
+
+On the landing page, **▶ Watch Demo** opens a popup with an animated video
+walkthrough and a step-by-step guided tour. **Try as a farmer** and **Try as a
+buyer** open a ready-made demo account with no sign-up (`POST /api/auth/demo`,
+optionally `?as=buyer`). It is seeded on first use with farms, crops,
+livestock, inventory, finance, marketplace listings, and a paid order whose
+escrow is held, so you can go straight to *Mark Fulfilled → Release Funds*.
+Set `app.demo.enabled=false` to turn it off. To refresh the video and tour
+images, see `frontend/public/demo/README.md`.
+
 ## Suggested demo script
 
 Register an org as OWNER → add a farm → add a crop → check its weather →

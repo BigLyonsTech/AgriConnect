@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DemoModal from '../components/DemoModal';
 import ThemeToggle from '../components/ThemeToggle';
+import TryDemoButtons from '../components/TryDemoButtons';
 import '../styles/landing.css';
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
 
   return (
     <div className="landing">
@@ -61,7 +64,12 @@ export default function LandingPage() {
 
               <div className="hero-buttons">
                 <Link to="/register" className="btn btn-primary">Get Started Free →</Link>
-                <a href="#features" className="btn btn-outline">▶ Watch Demo</a>
+                <button type="button" className="btn btn-outline" onClick={() => setDemoOpen(true)}>▶ Watch Demo</button>
+              </div>
+
+              <div className="hero-live-demo">
+                <span>Or open the live demo, no sign-up needed:</span>
+                <TryDemoButtons />
               </div>
 
               <div className="checks">
@@ -199,6 +207,8 @@ export default function LandingPage() {
           <p>© 2026 AgriConnect Farm. All rights reserved.</p>
         </div>
       </footer>
+
+      <DemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   );
 }

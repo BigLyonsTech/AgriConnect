@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react';
-import { login as loginRequest, registerOrganization } from '../../api/authApi';
+import { demoLogin, login as loginRequest, registerOrganization } from '../../api/authApi';
 
 const AuthContext = createContext(null);
 
@@ -62,6 +62,21 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const loginAsDemo = async (as) => {
+    const data = await demoLogin(as);
+    persistSession(data);
+    setToken(data.token);
+    setUser({
+      userId: data.userId,
+      email: data.email,
+      fullName: data.fullName,
+      role: data.role,
+      organizationId: data.organizationId,
+      organizationName: data.organizationName,
+    });
+    return data;
+  };
+
   const logout = () => {
     localStorage.removeItem('agriconnect_token');
     localStorage.removeItem('agriconnect_user');
@@ -70,7 +85,7 @@ export function AuthProvider({ children }) {
   };
 
   const value = useMemo(
-    () => ({ user, token, isAuthenticated: Boolean(token), login, register, logout }),
+    () => ({ user, token, isAuthenticated: Boolean(token), login, register, loginAsDemo, logout }),
     [user, token]
   );
 
