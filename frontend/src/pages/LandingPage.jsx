@@ -103,7 +103,7 @@ export default function LandingPage() {
               </div>
 
               <div className="floating product">
-                <img src="https://images.unsplash.com/photo-1546470427-227c8e3f4a80?auto=format&fit=crop&w=500&q=80" alt="Fresh tomatoes" />
+                <img src="/images/tomatoes.jpg" alt="Fresh tomatoes" />
                 <h5>Fresh Tomatoes</h5>
                 <p>₦2,500 / kg</p>
                 <span className="buy">Buy Now</span>
