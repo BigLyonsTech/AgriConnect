@@ -61,8 +61,9 @@ table.data-table{ width: 100%; border-collapse: collapse; background: var(--surf
 table.data-table th{ text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--subtle); padding: 12px 16px; background: var(--surface-2); }
 table.data-table td{ padding: 12px 16px; font-size: 13px; color: var(--text); border-top: 1px solid var(--line-soft); }
 .badge{ display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-.badge-active, .badge-paid, .badge-fulfilled, .badge-held, .badge-released{ background: var(--green-light); color: var(--green-text); }
-.badge-pending, .badge-planted{ background: var(--warn-bg); color: var(--warn-text); }
+.badge-active, .badge-growing, .badge-paid, .badge-fulfilled, .badge-held, .badge-released{ background: var(--green-light); color: var(--green-text); }
+.badge-pending, .badge-pending_payment, .badge-planted{ background: var(--warn-bg); color: var(--warn-text); }
+.badge-harvested{ background: var(--info-bg); color: var(--info-text); }
 .badge-closed, .badge-cancelled, .badge-failed, .badge-sold_out{ background: var(--neutral-bg); color: var(--neutral-text); }
 
 .summary-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }

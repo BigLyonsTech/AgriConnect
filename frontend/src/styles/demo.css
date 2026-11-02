@@ -1,0 +1,70 @@
+/* Watch Demo modal + "Try the live demo" buttons. Colours come from theme.css. */
+.demo-backdrop{
+  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px;
+  background: rgba(8, 20, 15, .6); backdrop-filter: blur(4px);
+  font-family: Inter, system-ui, -apple-system, sans-serif; line-height: 1.5;
+}
+.demo-modal{
+  width: min(960px, 100%); max-height: calc(100vh - 32px); overflow-y: auto;
+  background: var(--surface); color: var(--text); border-radius: 18px; padding: 20px 24px 24px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+}
+.demo-head{ display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.demo-head h2{ font-size: 20px; margin: 0; }
+.demo-close{
+  width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); font-size: 22px; line-height: 1; cursor: pointer;
+}
+.demo-close:hover{ border-color: var(--green-text); }
+
+.demo-tabs{ display: flex; gap: 6px; margin-bottom: 14px; }
+.demo-tabs button{
+  padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer;
+}
+.demo-tabs button.active{ background: var(--green); border-color: var(--green); color: #fff; }
+
+.demo-stage{
+  border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--surface-2);
+  aspect-ratio: 16 / 9; display: grid; place-items: center;
+}
+.demo-stage img{ width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.demo-caption{ margin-top: 14px; }
+.demo-caption small{ color: var(--subtle); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.demo-caption h3{ font-size: 17px; margin: 2px 0 4px; }
+.demo-caption p{ color: var(--muted); font-size: 14px; margin: 0; }
+.demo-tour-nav{ display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.demo-dots{ display: flex; gap: 8px; }
+.demo-dots button{ width: 9px; height: 9px; padding: 0; border-radius: 50%; border: none; background: var(--line); cursor: pointer; }
+.demo-dots button.active{ background: var(--green-text); }
+
+.demo-foot{
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.demo-foot p{ margin: 0; color: var(--muted); font-size: 14px; }
+.demo-foot strong{ color: var(--text); }
+
+.try-demo-buttons{ display: flex; gap: 8px; flex-wrap: wrap; }
+.demo-btn{
+  padding: 9px 16px; border-radius: 8px; border: 1px solid var(--green-line); background: var(--surface);
+  color: var(--green-text); font-weight: 700; font-size: 13px; cursor: pointer; font-family: inherit;
+}
+.demo-btn:hover:not(:disabled){ background: var(--green-light); }
+.demo-btn:disabled{ opacity: .5; cursor: not-allowed; }
+.demo-btn-primary{ background: var(--green); border-color: var(--green); color: #fff; }
+.demo-btn-primary:hover:not(:disabled){ background: var(--green-dark); }
+.try-demo-error{ color: var(--danger); font-size: 13px; margin: 8px 0 0; }
+
+/* Landing hero: small "or try the live demo" row under the main buttons. */
+.landing .hero-live-demo{ margin: -8px 0 22px; }
+.landing .hero-live-demo .demo-btn{ padding: 9px 16px; } /* beats the .landing * reset */
+.landing .hero-live-demo .try-demo-error{ margin-top: 8px; }
+.landing .hero-live-demo > span{ display: block; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+
+@media (max-width: 600px){
+  .demo-modal{ padding: 16px; }
+  .demo-foot{ flex-direction: column; align-items: stretch; }
+  .hero-live-demo .try-demo-buttons{ justify-content: center; }
+}

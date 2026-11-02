@@ -14,7 +14,7 @@
 .landing .nav-links{display:flex;gap:30px;color:var(--text-2);font-size:14px;font-weight:600}
 .landing .nav-links a:hover{color:var(--green-text)}
 .landing .nav-actions{display:flex;gap:12px;align-items:center}
-.landing .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:10px;font-weight:700;font-size:14px;transition:.25s;border:1px solid transparent;cursor:pointer}
+.landing .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:10px;font-weight:700;font-size:14px;transition:.25s;border:1px solid transparent;cursor:pointer;font-family:inherit}
 .landing .btn-primary{background:var(--green);color:#fff}
 .landing .btn-primary:hover{background:var(--green-dark);transform:translateY(-2px)}
 .landing .btn-outline{border-color:var(--green-line);background:var(--surface);color:var(--green-text)}
