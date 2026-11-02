@@ -31,13 +31,17 @@ import com.agriconnect.marketplace.repository.OrderRepository;
 import com.agriconnect.payment.entity.EscrowStatus;
 import com.agriconnect.payment.entity.EscrowTransaction;
 import com.agriconnect.payment.repository.EscrowTransactionRepository;
+import com.agriconnect.common.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -45,6 +49,10 @@ import java.util.UUID;
  * (OWNER) and a buyer org (BUYER) with realistic data across every module,
  * including a PAID order whose escrow is HELD so the fulfil -> release flow
  * can be shown. Later calls just issue a token for the existing demo user.
+ *
+ * {@link #reset()} wipes both demo orgs' data and seeds it again (keeping the
+ * orgs and users, so open demo sessions stay valid), so the walkthrough can
+ * be rerun after the PAID order has been fulfilled and released.
  *
  * Demo users get a random password nobody knows; access is only through this
  * endpoint, which can be switched off with app.demo.enabled=false.
@@ -70,6 +78,7 @@ public class DemoService {
     private final ListingRepository listingRepository;
     private final OrderRepository orderRepository;
     private final EscrowTransactionRepository escrowTransactionRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     public DemoService(@Value("${app.demo.enabled:true}") boolean enabled,
                        UserRepository userRepository,
@@ -85,7 +94,8 @@ public class DemoService {
                        RevenueRepository revenueRepository,
                        ListingRepository listingRepository,
                        OrderRepository orderRepository,
-                       EscrowTransactionRepository escrowTransactionRepository) {
+                       EscrowTransactionRepository escrowTransactionRepository,
+                       JdbcTemplate jdbcTemplate) {
         this.enabled = enabled;
         this.userRepository = userRepository;
         this.organizationRepository = organizationRepository;
@@ -101,6 +111,7 @@ public class DemoService {
         this.listingRepository = listingRepository;
         this.orderRepository = orderRepository;
         this.escrowTransactionRepository = escrowTransactionRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -113,9 +124,61 @@ public class DemoService {
             throw new NotFoundException("Demo is disabled");
         }
         if (!userRepository.existsByEmail(SELLER_EMAIL)) {
-            seed();
+            Long seller = createOrgWithUser("Green Valley Co-op (Demo)", "green-valley-co-op-demo",
+                    SELLER_EMAIL, "Amina Bello", Role.OWNER);
+            Long buyer = createOrgWithUser("Lagos Fresh Market (Demo)", "lagos-fresh-market-demo",
+                    BUYER_EMAIL, "Tunde Okafor", Role.BUYER);
+            seedData(seller, buyer);
         }
-        User user = userRepository.findByEmail(asBuyer ? BUYER_EMAIL : SELLER_EMAIL)
+        return tokenFor(asBuyer ? BUYER_EMAIL : SELLER_EMAIL);
+    }
+
+    /**
+     * Deletes everything the two demo orgs own or traded (including orders
+     * with other orgs) and seeds the demo data again. Only a signed-in demo
+     * user may call it, so a real tenant can never trigger it. Returns a
+     * fresh token for the demo farmer.
+     */
+    @Transactional
+    public synchronized AuthResponse reset() {
+        if (!enabled) {
+            throw new NotFoundException("Demo is disabled");
+        }
+        User seller = userRepository.findByEmail(SELLER_EMAIL)
+                .orElseThrow(() -> new NotFoundException("Demo has not been started yet"));
+        User buyer = userRepository.findByEmail(BUYER_EMAIL)
+                .orElseThrow(() -> new NotFoundException("Demo user missing"));
+        Long caller = SecurityUtils.currentUserId();
+        if (caller == null || !(caller.equals(seller.getId()) || caller.equals(buyer.getId()))) {
+            throw new AccessDeniedException("Only a demo user can reset the demo");
+        }
+
+        Long sellerOrg = seller.getOrganization().getId();
+        Long buyerOrg = buyer.getOrganization().getId();
+        wipe(sellerOrg, buyerOrg);
+        seedData(sellerOrg, buyerOrg);
+        return tokenFor(SELLER_EMAIL);
+    }
+
+    private void wipe(Long sellerOrg, Long buyerOrg) {
+        Object[] orgs = {sellerOrg, buyerOrg};
+        String inOrgs = "(?, ?)";
+        jdbcTemplate.update("DELETE FROM escrow_transactions WHERE buyer_organization_id IN " + inOrgs
+                + " OR order_id IN (SELECT id FROM orders WHERE buyer_organization_id IN " + inOrgs
+                + " OR seller_organization_id IN " + inOrgs + ")",
+                sellerOrg, buyerOrg, sellerOrg, buyerOrg, sellerOrg, buyerOrg);
+        jdbcTemplate.update("DELETE FROM orders WHERE buyer_organization_id IN " + inOrgs
+                + " OR seller_organization_id IN " + inOrgs, sellerOrg, buyerOrg, sellerOrg, buyerOrg);
+        jdbcTemplate.update("DELETE FROM listings WHERE organization_id IN " + inOrgs, orgs);
+        // Children before parents: yields -> crops, and everything -> farms.
+        for (String table : List.of("yield_records", "inventory_items", "expenses", "revenues",
+                "livestock", "crops", "farms")) {
+            jdbcTemplate.update("DELETE FROM " + table + " WHERE tenant_id IN " + inOrgs, orgs);
+        }
+    }
+
+    private AuthResponse tokenFor(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Demo user missing"));
         Organization org = user.getOrganization();
         String token = jwtService.generateToken(user.getId(), user.getEmail(), org.getId(), user.getRole().name());
@@ -123,12 +186,8 @@ public class DemoService {
                 user.getRole().name(), org.getId(), org.getName());
     }
 
-    private void seed() {
+    private void seedData(Long seller, Long buyer) {
         LocalDate today = LocalDate.now();
-        Long seller = createOrgWithUser("Green Valley Co-op (Demo)", "green-valley-co-op-demo",
-                SELLER_EMAIL, "Amina Bello", Role.OWNER);
-        Long buyer = createOrgWithUser("Lagos Fresh Market (Demo)", "lagos-fresh-market-demo",
-                BUYER_EMAIL, "Tunde Okafor", Role.BUYER);
 
         Farm main = farm(seller, "Green Valley Main", "Ibadan", 12.5);
         Farm riverside = farm(seller, "Riverside Plot", "Abeokuta", 4.0);

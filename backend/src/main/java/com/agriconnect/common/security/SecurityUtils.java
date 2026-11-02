@@ -23,10 +23,11 @@ public final class SecurityUtils {
 
     public static Long currentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getPrincipal() == null) {
+        // Anonymous requests carry the String "anonymousUser" as principal.
+        if (auth == null || !(auth.getPrincipal() instanceof Long userId)) {
             return null;
         }
-        return (Long) auth.getPrincipal();
+        return userId;
     }
 
     public static String currentRole() {

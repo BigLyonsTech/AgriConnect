@@ -41,4 +41,10 @@ public class AuthController {
     public ResponseEntity<AuthResponse> demo(@RequestParam(name = "as", required = false) String as) {
         return ResponseEntity.ok(demoService.login("buyer".equalsIgnoreCase(as)));
     }
+
+    /** Restores the demo data to its starting state. Caller must be signed in as a demo user. */
+    @PostMapping("/demo/reset")
+    public ResponseEntity<AuthResponse> resetDemo() {
+        return ResponseEntity.ok(demoService.reset());
+    }
 }
