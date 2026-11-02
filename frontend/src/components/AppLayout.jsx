@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
+import ResetDemoButton from './ResetDemoButton';
 import ThemeToggle from './ThemeToggle';
 import '../styles/applayout.css';
 
@@ -38,6 +39,7 @@ export default function AppLayout({ children }) {
             <strong>{user?.fullName}</strong>
             <small>{user?.role} · {user?.organizationName}</small>
           </div>
+          <ResetDemoButton />
           <ThemeToggle />
           <button onClick={logout} className="app-logout">Log Out</button>
         </div>

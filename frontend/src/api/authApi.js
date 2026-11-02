@@ -26,3 +26,9 @@ export async function demoLogin(as = 'farmer') {
   const response = await httpClient.post('/api/auth/demo', null, { params: as === 'buyer' ? { as } : {} });
   return response.data;
 }
+
+/** Restores the demo data to its starting state. Must be signed in as a demo user. */
+export async function resetDemo() {
+  const response = await httpClient.post('/api/auth/demo/reset');
+  return response.data;
+}
