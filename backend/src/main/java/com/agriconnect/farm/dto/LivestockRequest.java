@@ -1,6 +1,7 @@
 package com.agriconnect.farm.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -16,6 +17,7 @@ public class LivestockRequest {
 
     @NotNull(message = "Quantity is required")
     @Positive(message = "Quantity must be positive")
+    @Max(value = 1000000, message = "Quantity cannot exceed 1,000,000")
     private Integer quantity;
 
     private String healthNotes;

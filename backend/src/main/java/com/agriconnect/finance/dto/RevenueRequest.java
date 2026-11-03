@@ -1,6 +1,7 @@
 package com.agriconnect.finance.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -14,6 +15,7 @@ public class RevenueRequest {
     private String source;
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be positive")
+    @Digits(integer = 10, fraction = 2, message = "Amount can have at most 10 digits and 2 decimal places")
     private BigDecimal amount;
     @NotNull(message = "Date is required")
     private LocalDate date;
