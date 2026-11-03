@@ -1,6 +1,7 @@
 package com.agriconnect.inventory.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -16,6 +17,7 @@ public class InventoryItemRequest {
 
     @NotNull(message = "Quantity is required")
     @PositiveOrZero(message = "Quantity cannot be negative")
+    @DecimalMax(value = "100000000", message = "Quantity cannot exceed 100,000,000 kg")
     private Double quantityKg;
 
     public Long getFarmId() { return farmId; }

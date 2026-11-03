@@ -22,6 +22,8 @@ import java.util.List;
 @Service
 public class MarketplaceService {
 
+    static final BigDecimal MAX_ORDER_TOTAL = new BigDecimal("9999999999.99");
+
     private final ListingRepository listingRepository;
     private final OrderRepository orderRepository;
 
@@ -83,6 +85,11 @@ public class MarketplaceService {
         if (listing.getQuantityAvailable().compareTo(request.getQuantity()) < 0) {
             throw new IllegalArgumentException("Not enough quantity available on this listing");
         }
+        // total_amount is NUMERIC(12,2); price and quantity each fit, but their product may not.
+        BigDecimal total = listing.getPricePerUnit().multiply(request.getQuantity());
+        if (total.compareTo(MAX_ORDER_TOTAL) > 0) {
+            throw new IllegalArgumentException("Order total cannot exceed " + MAX_ORDER_TOTAL.toPlainString());
+        }
 
         BigDecimal remaining = listing.getQuantityAvailable().subtract(request.getQuantity());
         listing.setQuantityAvailable(remaining);
@@ -96,7 +103,7 @@ public class MarketplaceService {
         order.setBuyerOrganizationId(SecurityUtils.currentTenantId());
         order.setSellerOrganizationId(listing.getOrganizationId());
         order.setQuantity(request.getQuantity());
-        order.setTotalAmount(listing.getPricePerUnit().multiply(request.getQuantity()));
+        order.setTotalAmount(total);
         order.setStatus(OrderStatus.PENDING_PAYMENT);
 
         return OrderResponse.from(orderRepository.save(order));

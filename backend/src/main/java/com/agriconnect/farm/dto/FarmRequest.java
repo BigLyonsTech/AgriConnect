@@ -1,6 +1,7 @@
 package com.agriconnect.farm.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -14,6 +15,7 @@ public class FarmRequest {
 
     @NotNull(message = "Size in hectares is required")
     @Positive(message = "Size in hectares must be positive")
+    @DecimalMax(value = "1000000", message = "Size in hectares cannot exceed 1,000,000")
     private Double sizeHectares;
 
     public FarmRequest() {}

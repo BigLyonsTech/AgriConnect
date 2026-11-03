@@ -1,6 +1,7 @@
 package com.agriconnect.marketplace.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -16,6 +17,7 @@ public class ListingRequest {
 
     @NotNull(message = "Price per unit is required")
     @Positive(message = "Price per unit must be positive")
+    @Digits(integer = 10, fraction = 2, message = "Price can have at most 10 digits and 2 decimal places")
     private BigDecimal pricePerUnit;
 
     @NotBlank(message = "Unit is required")
@@ -23,6 +25,7 @@ public class ListingRequest {
 
     @NotNull(message = "Quantity available is required")
     @Positive(message = "Quantity available must be positive")
+    @Digits(integer = 10, fraction = 2, message = "Quantity can have at most 10 digits and 2 decimal places")
     private BigDecimal quantityAvailable;
 
     public Long getFarmId() { return farmId; }

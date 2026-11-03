@@ -1,6 +1,7 @@
 package com.agriconnect.inventory.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ public class YieldRecordRequest {
 
     @NotNull(message = "Quantity is required")
     @Positive(message = "Quantity must be positive")
+    @DecimalMax(value = "100000000", message = "Quantity cannot exceed 100,000,000 kg")
     private Double quantityKg;
 
     public Long getCropId() { return cropId; }
