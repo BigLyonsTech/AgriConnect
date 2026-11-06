@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtServiceTest {
 
@@ -43,5 +45,22 @@ class JwtServiceTest {
         Thread.sleep(5);
 
         assertThat(jwtService.isTokenValid(token)).isFalse();
+    }
+
+    @Test
+    void validateSecret_rejectsMissingShortAndPlaceholderSecrets() {
+        for (String bad : new String[]{null, "", "too-short-secret",
+                "change-this-in-production-min-32-characters-long"}) {
+            ReflectionTestUtils.setField(jwtService, "secret", bad);
+            assertThatThrownBy(jwtService::validateSecret)
+                    .as("secret %s", bad)
+                    .isInstanceOf(IllegalStateException.class);
+        }
+    }
+
+    @Test
+    void validateSecret_acceptsARandom32ByteSecret() {
+        ReflectionTestUtils.setField(jwtService, "secret", "Jx8sV0r2Qe5mT7wZ1yB4nC6dF9gH3kLp");
+        assertThatCode(jwtService::validateSecret).doesNotThrowAnyException();
     }
 }

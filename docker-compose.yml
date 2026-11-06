@@ -26,7 +26,8 @@ services:
       DB_USERNAME: agriconnect
       DB_PASSWORD: agriconnect
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/agriconnect
-      JWT_SECRET: change-this-in-production-min-32-characters-long
+      # Required: compose refuses to start without it. Generate one as shown in .env.example.
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (see .env.example)}
       CORS_ALLOWED_ORIGINS: http://localhost:5173
       # Read from the shell or a root .env file (see .env.example). Empty means
       # payments/weather return 502; everything else still works.

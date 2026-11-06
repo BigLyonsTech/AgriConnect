@@ -15,6 +15,8 @@ import com.agriconnect.payment.repository.EscrowTransactionRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.access.AccessDeniedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,8 @@ import java.util.UUID;
 
 @Service
 public class EscrowService {
+
+    private static final Logger log = LoggerFactory.getLogger(EscrowService.class);
 
     private final EscrowTransactionRepository escrowTransactionRepository;
     private final OrderRepository orderRepository;
@@ -85,6 +89,21 @@ public class EscrowService {
             if ("charge.success".equals(eventType)) {
                 EscrowTransaction transaction = escrowTransactionRepository.findByPaystackReference(reference)
                         .orElseThrow(() -> new NotFoundException("No escrow transaction for reference: " + reference));
+                // Paystack retries webhooks, so the same event can arrive again after the
+                // funds were released. Only PENDING -> HELD is a valid move; anything else
+                // is a duplicate and is acknowledged without changing state.
+                if (transaction.getStatus() != EscrowStatus.PENDING) {
+                    log.info("Ignoring duplicate charge.success for {} (escrow is {})", reference, transaction.getStatus());
+                    return;
+                }
+                // Paystack reports amounts in kobo. A mismatch means the charge was not for this order.
+                long paidKobo = event.path("data").path("amount").asLong(-1);
+                long expectedKobo = transaction.getAmount().movePointRight(2).longValueExact();
+                if (paidKobo != expectedKobo) {
+                    log.warn("charge.success for {} paid {} kobo, expected {}; not marking as paid",
+                            reference, paidKobo, expectedKobo);
+                    throw new IllegalArgumentException("Paid amount does not match the order total");
+                }
                 transaction.setStatus(EscrowStatus.HELD);
                 escrowTransactionRepository.save(transaction);
 
