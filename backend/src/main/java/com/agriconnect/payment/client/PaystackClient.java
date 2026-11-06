@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Duration;
 
 /**
@@ -89,7 +90,9 @@ public class PaystackClient {
             for (byte b : hash) {
                 hex.append(String.format("%02x", b));
             }
-            return hex.toString().equalsIgnoreCase(signatureHeader);
+            // Constant-time comparison so response timing reveals nothing about the expected value.
+            return MessageDigest.isEqual(hex.toString().getBytes(StandardCharsets.UTF_8),
+                    signatureHeader.toLowerCase().getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             return false;
         }

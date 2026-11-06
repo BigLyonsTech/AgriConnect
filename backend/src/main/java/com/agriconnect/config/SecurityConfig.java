@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.Clock;
 import java.util.List;
 
 @Configuration
@@ -27,6 +28,12 @@ public class SecurityConfig {
 
     @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
     private List<String> allowedOrigins;
+
+    @Value("${app.rate-limit.auth.max-requests:10}")
+    private int authMaxRequests;
+
+    @Value("${app.rate-limit.auth.window-seconds:60}")
+    private long authWindowSeconds;
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
@@ -72,7 +79,10 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // After CORS, so a 429 still carries CORS headers and the frontend can show its message.
+                .addFilterBefore(new AuthRateLimitFilter(authMaxRequests, authWindowSeconds, Clock.systemUTC()),
+                        JwtAuthFilter.class);
 
         return http.build();
     }

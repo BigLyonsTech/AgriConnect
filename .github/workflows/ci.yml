@@ -54,4 +54,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build all compose images
+        env:
+          JWT_SECRET: ci-build-only-not-a-real-secret-0123456789
         run: docker compose build

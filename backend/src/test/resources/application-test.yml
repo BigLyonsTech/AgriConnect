@@ -11,6 +11,10 @@ spring:
     open-in-view: true
 
 app:
+  rate-limit:
+    auth:
+      # Every test calls from 127.0.0.1; AuthRateLimitFilterTest covers the limiter itself.
+      max-requests: 100000
   jwt:
     secret: test-secret-key-for-junit-tests-only-32-chars-min
     expiration-ms: 3600000
