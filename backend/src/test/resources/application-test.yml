@@ -6,7 +6,9 @@ spring:
     password:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      # Tests build the schema from the Flyway migrations, so drift between
+      # the SQL and the entities fails the build.
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.H2Dialect
     open-in-view: true
 
