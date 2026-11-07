@@ -8,9 +8,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/agriconnect
     username: ${DB_USERNAME:agriconnect}
     password: ${DB_PASSWORD:agriconnect}
+  flyway:
+    # Databases created by the old ddl-auto=update already hold the V1 schema:
+    # mark them as version 1 and apply only the later migrations.
+    baseline-on-migrate: true
+    baseline-version: 1
   jpa:
     hibernate:
-      ddl-auto: update
+      # Flyway owns the schema; Hibernate only checks the entities still match it.
+      ddl-auto: validate
     open-in-view: true
     properties:
       hibernate:

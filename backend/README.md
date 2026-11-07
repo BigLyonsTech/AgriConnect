@@ -100,6 +100,19 @@ mvn spring-boot:run
 
 Or the whole stack from the project root: `docker-compose up --build`.
 
+## Database migrations
+
+Flyway owns the schema (`src/main/resources/db/migration`); Hibernate runs with
+`ddl-auto: validate` and refuses to start if an entity and the tables disagree.
+The tests build their H2 schema from the same migrations, so drift fails CI.
+
+- To change the schema, add a new `V<n>__<description>.sql`. Never edit a
+  migration that has already been applied anywhere: Flyway checksums them.
+- `V1__baseline.sql` is the schema the old `ddl-auto: update` produced. A database
+  created before Flyway is marked as version 1 on first start
+  (`baseline-on-migrate`) and only receives `V2` onwards.
+- Keep migrations to SQL that both PostgreSQL and H2 (PostgreSQL mode) accept.
+
 ## Running the tests
 
 ```bash
